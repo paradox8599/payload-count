@@ -3,7 +3,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-vercel-postg
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TABLE IF NOT EXISTS "users" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"email" varchar NOT NULL,
@@ -16,14 +16,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE IF NOT EXISTS "tags" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
   CREATE TABLE IF NOT EXISTS "products" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -32,13 +32,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE IF NOT EXISTS "products_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
-  	"parent_id" uuid NOT NULL,
+  	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"tags_id" uuid
+  	"tags_id" integer
   );
   
   CREATE TABLE IF NOT EXISTS "payload_locked_documents" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"global_slug" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
@@ -47,15 +47,15 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE IF NOT EXISTS "payload_locked_documents_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
-  	"parent_id" uuid NOT NULL,
+  	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"users_id" uuid,
-  	"tags_id" uuid,
-  	"products_id" uuid
+  	"users_id" integer,
+  	"tags_id" integer,
+  	"products_id" integer
   );
   
   CREATE TABLE IF NOT EXISTS "payload_preferences" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"key" varchar,
   	"value" jsonb,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -65,13 +65,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE IF NOT EXISTS "payload_preferences_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
-  	"parent_id" uuid NOT NULL,
+  	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"users_id" uuid
+  	"users_id" integer
   );
   
   CREATE TABLE IF NOT EXISTS "payload_migrations" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"name" varchar,
   	"batch" numeric,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
