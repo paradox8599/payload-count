@@ -2,11 +2,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildConfig, getPayload as originalGetPayload } from 'payload';
 
-import { sqlite } from './payload/config/database';
-
 import { Users } from './payload/collections/users';
 import { Tags } from './payload/collections/tags';
 import { Products } from './payload/collections/products';
+import { sqliteAdapter } from '@payloadcms/db-sqlite';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -22,7 +21,11 @@ const payloadConfig = buildConfig({
     });
   },
 
-  db: sqlite,
+  db: sqliteAdapter({
+    client: {
+      url: 'file:./public/sqlite.db',
+    },
+  }),
 
   collections: [Users, Tags, Products],
 
