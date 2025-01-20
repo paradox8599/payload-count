@@ -9,7 +9,7 @@ import { Media } from './payload/collections/media';
 import { createS3Storage } from './payload/config/s3-storage';
 import { payloadInit } from './payload/config/init';
 import { email } from '@/payload/config/email';
-import { db } from './payload/config/database';
+import { sqlite } from './payload/config/database';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -21,7 +21,7 @@ const payloadConfig = buildConfig({
 
   editor: lexicalEditor(),
   email,
-  db,
+  db: sqlite,
   sharp,
   plugins: [...createS3Storage()],
 
@@ -34,11 +34,11 @@ const payloadConfig = buildConfig({
       process.env.NODE_ENV !== 'development'
         ? undefined
         : {
-            email: 'admin@me.com',
-            password: 'admin@me.com',
-            username: 'admin@me.com',
-            prefillOnly: true,
-          },
+          email: 'admin@me.com',
+          password: 'admin@me.com',
+          username: 'admin@me.com',
+          prefillOnly: true,
+        },
   },
 });
 
