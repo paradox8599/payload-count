@@ -24,7 +24,7 @@ export async function seed() {
     await payload.create({
       collection: 'products',
       data: {
-        name: 'tag-2',
+        name: `product-${i}`,
         tags: connectTags,
       },
     });
