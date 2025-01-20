@@ -14,19 +14,12 @@ const dirname = path.dirname(filename);
 const payloadConfig = buildConfig({
   typescript: { outputFile: path.resolve(dirname, 'payload.d.ts') },
   secret: process.env.PAYLOAD_SECRET || 'xxxxxxxxxxxxxxxxxxxxxxxx',
-  onInit: async (payload) => {
-    await payload.db.deleteMany({ collection: 'users', where: {} });
-    await payload.create({
-      collection: 'users',
-      data: { email: 'admin@me.com', password: 'admin@me.com' },
-    });
-  },
-
   db: db,
 
   collections: [Users, Tags, Products],
 
   admin: {
+    user: Users.slug,
     components: {
       beforeDashboard: [{ path: '@/payload/config/seed-button' }],
     },
@@ -34,7 +27,6 @@ const payloadConfig = buildConfig({
     autoLogin: {
       email: 'admin@me.com',
       password: 'admin@me.com',
-      username: 'admin@me.com',
     },
   },
 });
