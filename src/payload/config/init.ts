@@ -1,19 +1,32 @@
-import { Payload } from 'payload';
+import { getPayload } from '@/payload.config';
+import { randomInt } from 'crypto';
 
-export function payloadInit(_payload: Payload) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Environment:', {
-      PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
-      DATABASE_URI: process.env.DATABASE_URI,
+export async function seed() {
+  const payload = await getPayload();
 
-      S3_ENDPOINT: process.env.S3_ENDPOINT,
-      S3_BUCKET: process.env.S3_BUCKET,
-      S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
-      S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+  await payload.db.deleteMany({ collection: 'products', where: {} });
+  await payload.db.deleteMany({ collection: 'tags', where: {} });
 
-      RESEND_API_KEY: process.env.RESEND_API_KEY,
-      RESEND_DEFAULT_NAME: process.env.RESEND_DEFAULT_NAME,
-      RESEND_DEFAULT_FROM_ADDRESS: process.env.RESEND_DEFAULT_FROM_ADDRESS,
+  const tags = [
+    await payload.create({
+      collection: 'tags',
+      data: { name: 'tag-1' },
+    }),
+    await payload.create({
+      collection: 'tags',
+      data: { name: 'tag-2' },
+    }),
+  ];
+  for (let i = 1; i <= 10; i++) {
+    const hasTwoTags = randomInt(2) === 0;
+    const connectTags = hasTwoTags ? tags : [tags[0]];
+
+    await payload.create({
+      collection: 'products',
+      data: {
+        name: 'tag-2',
+        tags: connectTags,
+      },
     });
   }
 }

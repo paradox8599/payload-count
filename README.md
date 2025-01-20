@@ -1,18 +1,14 @@
-# Blank Payload
+# Reproducing filter counting issue
 
-## Getting Started
+# Reproducing Steps
 
-### Auth
+- no `.env` required
+- run `dev` command
+- click `Seed` button on dashboard page to generate sample data.
+- click `See Filter` link on dashboard page to see where the issue happens.
 
-[Auth.js](https://authjs.dev/getting-started/installation)
+## Other info
 
-[Custom Auth Strategy](https://payloadcms.com/docs/authentication/custom-strategies#example-strategy)
-
-### Vercel
-
-[Vercel Configuration](https://vercel.com/docs/projects/project-configuration)
-
-### Tailwind & shadcn/ui
-
-[Resolves Conflict](https://www.npmjs.com/package/tailwindcss-scoped-preflight)
-
+- it happens on both `sqlite` and `postgres`
+- tried on `bun` and `pnpm`
+- note: when using `payload.count()` and `payload.find()`, same thing happens to their `totalDocs`

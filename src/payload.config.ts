@@ -1,15 +1,12 @@
 import path from 'path';
-import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 import { buildConfig, getPayload as originalGetPayload } from 'payload';
-import { lexicalEditor } from '@payloadcms/richtext-lexical';
+
+import { sqlite } from './payload/config/database';
 
 import { Users } from './payload/collections/users';
-import { Media } from './payload/collections/media';
-import { createS3Storage } from './payload/config/s3-storage';
-import { payloadInit } from './payload/config/init';
-import { email } from '@/payload/config/email';
-import { sqlite } from './payload/config/database';
+import { Tags } from './payload/collections/tags';
+import { Products } from './payload/collections/products';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -17,28 +14,28 @@ const dirname = path.dirname(filename);
 const payloadConfig = buildConfig({
   typescript: { outputFile: path.resolve(dirname, 'payload.d.ts') },
   secret: process.env.PAYLOAD_SECRET || 'xxxxxxxxxxxxxxxxxxxxxxxx',
-  onInit: payloadInit,
+  onInit: async (payload) => {
+    await payload.db.deleteMany({ collection: 'users', where: {} });
+    await payload.create({
+      collection: 'users',
+      data: { email: 'admin@me.com', password: 'admin@me.com' },
+    });
+  },
 
-  editor: lexicalEditor(),
-  email,
   db: sqlite,
-  sharp,
-  plugins: [...createS3Storage()],
 
-  collections: [Users, Media],
+  collections: [Users, Tags, Products],
 
   admin: {
-    user: Users.slug,
+    components: {
+      beforeDashboard: [{ path: '@/payload/config/seed-button' }],
+    },
     importMap: { baseDir: path.resolve(dirname) },
-    autoLogin:
-      process.env.NODE_ENV !== 'development'
-        ? undefined
-        : {
-          email: 'admin@me.com',
-          password: 'admin@me.com',
-          username: 'admin@me.com',
-          prefillOnly: true,
-        },
+    autoLogin: {
+      email: 'admin@me.com',
+      password: 'admin@me.com',
+      username: 'admin@me.com',
+    },
   },
 });
 
