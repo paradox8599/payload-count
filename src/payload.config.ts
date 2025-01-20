@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildConfig, getPayload as originalGetPayload } from 'payload';
 
-import { sqlite } from './payload/config/database';
+import { db } from './payload/config/database';
 
 import { Users } from './payload/collections/users';
 import { Tags } from './payload/collections/tags';
@@ -22,11 +22,12 @@ const payloadConfig = buildConfig({
     });
   },
 
-  db: sqlite,
+  db: db,
 
   collections: [Users, Tags, Products],
 
   admin: {
+    user: Users.slug,
     components: {
       beforeDashboard: [{ path: '@/payload/config/seed-button' }],
     },
