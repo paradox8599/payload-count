@@ -1,39 +1,33 @@
-// storage-adapter-import-placeholder
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
-import sharp from 'sharp'
 
 import { Users } from './collections/Users'
-import { Media } from './collections/Media'
+import { Tags } from './collections/tags'
+import { Products } from './collections/products'
+import { getPayload as originGetPayload } from 'payload'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-export default buildConfig({
+const config = buildConfig({
   admin: {
     user: Users.slug,
-    importMap: {
-      baseDir: path.resolve(dirname),
+    importMap: { baseDir: path.resolve(dirname) },
+    components: {
+      beforeDashboard: [{ path: '@/seed-button' }],
     },
   },
-  collections: [Users, Media],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  collections: [Users, Tags, Products],
+  secret: '3a857c00d56f1c82da83e268',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: sqliteAdapter({
-    client: {
-      url: process.env.DATABASE_URI || '',
-    },
-  }),
-  sharp,
-  plugins: [
-    payloadCloudPlugin(),
-    // storage-adapter-placeholder
-  ],
+  db: sqliteAdapter({ client: { url: 'file:./repro.db' } }),
+  plugins: [],
 })
+
+export default config
+
+export const getPayload = async () => await originGetPayload({ config: config })
